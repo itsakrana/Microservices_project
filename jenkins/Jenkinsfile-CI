@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_USERNAME = "akrana2006"
+        IMAGE_BACKEND = "backend"
+        IMAGE_FRONTEND = "frontend"
+    }
+
+    stages {
+
+        stage('Clone Code') {
+            steps {
+                git 'https://github.com//devops-project.git'
+            }
+        }
+
+        stage('Build Backend') {
+            steps {
+                sh 'docker build -t $DOCKER_USERNAME/$IMAGE_BACKEND:latest ./backend'
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                sh 'docker build -t $DOCKER_USERNAME/$IMAGE_FRONTEND:latest ./frontend'
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-cred',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                }
+            }
+        }
+
+        stage('Push Images') {
+            steps {
+                sh 'docker push $DOCKER_USERNAME/$IMAGE_BACKEND:latest'
+                sh 'docker push $DOCKER_USERNAME/$IMAGE_FRONTEND:latest'
+            }
+        }
+    }
+}
