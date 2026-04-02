@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f k8s/'
+            }
+        }
+
+        stage('Check Deployment') {
+            steps {
+                sh 'kubectl get pods -n production'
+                sh 'kubectl get svc -n production'
+            }
+        }
+
+    }
+}
