@@ -11,7 +11,7 @@ pipeline {
 
         stage('Clone Code') {
             steps {
-                git 'https://github.com//devops-project.git'
+                git 'https://github.com/itsakrana/Microservices_project.git'
             }
         }
 
